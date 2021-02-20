@@ -21,8 +21,7 @@ para instalar todas as dependêcias do projeto
 
 Basicamente o aplicativo contém três botões: um para tirar foto, um para entrar no album e outro para inverter a câmera conforme a imagem abaixo.
 
-![](C:\Gabriel\Projetos\Blog\github\AppCamera.jpg)
-
+![AppCamera](https://user-images.githubusercontent.com/10618397/108587243-59ac7c00-7331-11eb-9784-eb97a321bee0.jpg)
 
 
 ## Contribuição
