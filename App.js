@@ -1,6 +1,9 @@
 import React,{useState} from 'react';
-import { View,Text,StatusBar,StyleSheet, TouchableOpacity,Modal,Image } from 'react-native';
+import { View,Text,StatusBar,StyleSheet, TouchableOpacity,Modal,
+  Image,PermissionsAndroid,Platform } from 'react-native';
 import {RNCamera } from 'react-native-camera'
+import CameraRoll from '@react-native-community/cameraroll';
+import ImagePicker from 'react-native-image-picker';
 
 export default function  Camera() {
   const [type,setType] = useState(RNCamera.Constants.Type.back);
@@ -14,11 +17,62 @@ export default function  Camera() {
     setOpen(true);
 
     console.log('FOTO TIRADA CAMERA: ' + data.uri);
+
+    //salvar a foto
+    savePicture(data.uri);
+  }
+
+  async function hasAndroidPermissioin(){
+    const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
+    
+    const hasPermission = await PermissionsAndroid.check(permission);
+    if(hasPermission){
+      return true;
+    }
+
+    const status = await PermissionsAndroid.request(permission);
+
+    return status === 'granted';
+  }
+
+  async function savePicture(data){
+    if(Platform.OS === 'android' && !(await hasAndroidPermissioin())){
+      return;
+    }
+
+    CameraRoll.save(data,'photo')
+    .then((res) => {
+      console.log('Salvo co sucesso: ',res)
+    })
+    .catch((err) => {
+      console.log('Error ao Salvar: ' + err)
+    })
   }
 
   function toogleCam(){
     setType( (type === RNCamera.Constants.Type.back) ? RNCamera.Constants.Type.front : RNCamera.Constants.Type.back);
     console.log('TYPE: ',type);
+  }
+
+  function openAlbum(){
+    const options = {
+      title:'Selecione uma foto',
+      chooseFromLibraryButtonTitle: 'Buscar foto do album ..',
+      noData:true,
+      mediaType:'photo'
+    };
+
+    ImagePicker.launchImageLibrary(options,(response) => {
+      if(response.didCancel){
+        console.log('Image Picker cancelado ...');
+
+      } else if (response.error){
+        console.log('Gerou algum erro: ' + response.error)
+      } else {
+        setCapturedPhoto(response.uri);
+        setOpen(true);
+      }
+    } )
   }
 
  return (
@@ -47,7 +101,7 @@ export default function  Camera() {
                   <Text>Tirar Foto</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => {}}
+                  onPress={openAlbum}
                   style={styles.capture}
                 >
                   <Text>Album</Text>
