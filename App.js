@@ -16,6 +16,11 @@ export default function  Camera() {
     console.log('FOTO TIRADA CAMERA: ' + data.uri);
   }
 
+  function toogleCam(){
+    setType( (type === RNCamera.Constants.Type.back) ? RNCamera.Constants.Type.front : RNCamera.Constants.Type.back);
+    console.log('TYPE: ',type);
+  }
+
  return (
    
     <View style={styles.container}>
@@ -51,6 +56,12 @@ export default function  Camera() {
           )
         }}
       </RNCamera>
+
+      <View style={styles.camPosition}>
+        <TouchableOpacity onPress={toogleCam}>
+          <Text>Trocar</Text>
+        </TouchableOpacity>
+      </View>
 
       {capturedPhoto && 
       
@@ -95,5 +106,14 @@ const styles = StyleSheet.create({
     paddingHorizontal:20,
     alignSelf:'center',
     margin:20,
+  },
+  camPosition:{
+    backgroundColor:'#FFF',
+    borderRadius:5,
+    padding:10,
+    height:40,
+    position:'absolute',
+    right:25,
+    top:60,
   }
 })
