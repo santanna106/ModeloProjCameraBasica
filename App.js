@@ -1,13 +1,19 @@
 import React,{useState} from 'react';
-import { View,Text,StatusBar,StyleSheet, TouchableOpacity,Modal } from 'react-native';
+import { View,Text,StatusBar,StyleSheet, TouchableOpacity,Modal,Image } from 'react-native';
 import {RNCamera } from 'react-native-camera'
 
 export default function  Camera() {
   const [type,setType] = useState(RNCamera.Constants.Type.back);
   const [open,setOpen] = useState(false);
+  const [capturedPhoto,setCapturedPhoto] = useState(null);
 
-  function takePicture(){
+  async function  takePicture(camera){
+    const options = {quality:0.5,base64:true};
+    const data = await camera.takePictureAsync(options);
+    setCapturedPhoto(data.uri);
     setOpen(true);
+
+    console.log('FOTO TIRADA CAMERA: ' + data.uri);
   }
 
  return (
@@ -30,7 +36,7 @@ export default function  Camera() {
           return (
             <View style={{marginBottom:35, flexDirection: 'row',alignItems:'flex-end',justifyContent:'space-between'}}>
                 <TouchableOpacity
-                  onPress={() => { takePicture()}}
+                  onPress={() => { takePicture(camera)}}
                   style={styles.capture}
                 >
                   <Text>Tirar Foto</Text>
@@ -46,6 +52,8 @@ export default function  Camera() {
         }}
       </RNCamera>
 
+      {capturedPhoto && 
+      
       <Modal animationType='slide' transparent={false} visible={open}>
         <View style={{flex:1,justifyContent:'center',alignItems:'center',margin:20}}>
           <TouchableOpacity 
@@ -53,9 +61,17 @@ export default function  Camera() {
            onPress={() => setOpen(false)}>
             <Text style={{fontSize:25}}>Fechar</Text>
           </TouchableOpacity>
+
+          <Image 
+            resizeMode='contain'
+            style={{height:450,width:350,borderRadius:15}}
+            source={{uri:capturedPhoto}}
+          />
         </View>
 
       </Modal>
+      }
+      
     </View>
   
   );
